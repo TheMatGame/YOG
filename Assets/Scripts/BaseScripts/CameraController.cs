@@ -5,25 +5,13 @@ public class CameraController : MonoBehaviour
 {
     PlayerController playerRef;
 
-    [Header("References")]
     public float distance = 10f;
-    // public Transform mainCamera;
-    // public Transform playerObj;
-    // public Transform orientation;
-    // public Material overlappingMaterial;
+    public LayerMask layer;
+ 
 
-    // public float rotationSpeed = 7;
-
-
-    // float horizontalInput;
-    // float verticalInput;
-
-    // Vector3 moveDirection;
-
-    //CAMERA
     private float yaw = 0f;
     private float pitch = 0f;
-    //////////
+
     
 
 
@@ -59,12 +47,26 @@ public class CameraController : MonoBehaviour
         Quaternion finalRotation = yawRotation * pitchRotation * playerRef.transform.rotation;
         transform.rotation = finalRotation;
         
-        Vector3 offset = finalRotation * new Vector3(0, 0, -distance);
+        // Calcula el offset de la camara teniendo en cuenta las colisiones
+        Vector3 offset = OffsetCalculation(finalRotation);
+
         transform.position = playerRef.transform.position + offset;
 
-        // Refleja el forward de la camara en el plano
-        // Vector3 forward = Vector3.ProjectOnPlane(mainCamera.forward, transform.up).normalized;
-        // orientation.LookAt(orientation.position + forward, transform.up);
+    }
+
+    Vector3 OffsetCalculation(Quaternion finalRotation) 
+    {
+        Vector3 offset = finalRotation * new Vector3(0, 0, -distance);
+
+        RaycastHit hit;
+        bool hited = Physics.Linecast(playerRef.transform.position, playerRef.transform.position + offset, out hit, layer);
+
+        if (hited) {
+            float newDistance = Vector3.Distance(playerRef.transform.position, hit.point);
+            offset = finalRotation * new Vector3(0,0,-newDistance);
+        }
+
+        return offset;
     }
 
 

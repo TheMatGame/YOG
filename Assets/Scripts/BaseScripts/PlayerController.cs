@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : GravityController
@@ -9,6 +7,7 @@ public class PlayerController : GravityController
 
     [Header("References")]
     public Transform playerObj;
+    public Transform fakeShadow;
 
 
     public float rotationSpeed = 7;
@@ -21,6 +20,8 @@ public class PlayerController : GravityController
 
     [Header("Movement")]
     public float moveSpeed;
+    public float runSpeed;
+    private float speed;
     private RaycastHit castHit;
 
     public float groundDrag;
@@ -29,16 +30,20 @@ public class PlayerController : GravityController
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump = true;
+    [HideInInspector]
+    public Vector3 jumpDirection = Vector3.zero;
 
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
+    public KeyCode sprintKey = KeyCode.LeftShift;
     public KeyCode kickKey = KeyCode.E;
     public KeyCode grabKey = KeyCode.G;
 
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
-    bool grounded;
+    [HideInInspector]
+    public bool grounded;
     
 
     [Header("Fighting")]
@@ -51,7 +56,7 @@ public class PlayerController : GravityController
     [Header("Grabbing")]
     bool canGrab = true;
     bool isGrabbing = false;
-    bool canThrow = false;
+    // bool canThrow = false;
     public float grabDistance = 1f;
     public float grabRadius = 0.5f;
     GameObject grabedActor;
@@ -68,15 +73,12 @@ public class PlayerController : GravityController
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        speed = moveSpeed;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // DebugOrientationVectors();
-        DebugPlayerVelocity();
-
-
         MyInput();
         SpeedControl();
 
@@ -87,6 +89,12 @@ public class PlayerController : GravityController
             rb.linearDamping = groundDrag;
         else 
             rb.linearDamping = 0;
+
+        RaycastHit shadowHit;
+        bool shadowHited = Physics.Linecast(transform.position, transform.position + gravityDirection * 100, out shadowHit, whatIsGround);
+        if (shadowHited) {
+            fakeShadow.position = shadowHit.point;
+        }
     }
 
     protected override void FixedUpdate()
@@ -102,11 +110,20 @@ public class PlayerController : GravityController
         verticalInput = Input.GetAxis("Vertical");
 
         // when to jump
-        if (Input.GetKey(jumpKey) && readyToJump && grounded)
-        {
+        if (Input.GetKey(jumpKey) && readyToJump && grounded){
             readyToJump = false;
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
+        }
+
+        if (Input.GetKeyDown(sprintKey)) // Se ejecuta una vez cuando se PRESIONA la tecla
+        {
+            Run();
+        }
+
+        if (Input.GetKeyUp(sprintKey)) // Se ejecuta una vez cuando se SUELTA la tecla
+        {
+            StopRunning();
         }
 
         if (Input.GetKey(kickKey) && readyToKick) {
@@ -132,12 +149,38 @@ public class PlayerController : GravityController
 
         // on ground
         if (grounded) {
-            rb.AddForce(moveDirection * moveSpeed * 100f, ForceMode.Acceleration);
+            rb.linearVelocity = moveDirection * speed + GetVelocityAlongGravity();
         }
         // in air
         else if (!grounded) {
-            rb.AddForce(moveDirection * moveSpeed * 100f * airMultiplier, ForceMode.Acceleration);
+            rb.linearVelocity = moveDirection * speed + GetVelocityAlongGravity();
+            // MidAirControll();
         }
+    }
+
+    private void MidAirControll() 
+    {
+        float coeficient = 0;
+
+        if (moveDirection.magnitude > 0) {
+            float angle = Math.Abs(Vector3.Angle(jumpDirection, moveDirection));
+
+            coeficient = Mathf.Clamp01(1 - (angle / 180f));
+        }
+        
+
+        // if (angle > 90) angle = 180 - angle;
+        // float coeficient = Mathf.Clamp01(1 - (angle / 90f) + 0.2f);
+
+        // Vector3 blendedDirection = Vector3.Slerp(jumpDirection.normalized, moveDirection.normalized, coeficient);
+
+        // Mantener la velocidad del salto sin perder la inercia
+        // rb.linearVelocity = blendedDirection * speed + GetVelocityAlongGravity();
+
+
+
+        rb.linearVelocity = jumpDirection.normalized * coeficient * speed + GetVelocityAlongGravity();
+
     }
 
     private void RotatePlayer() {
@@ -160,9 +203,9 @@ public class PlayerController : GravityController
         Vector3 velocity = GetVelocityOnPlane();
 
         // limit velocity if needed
-        if (velocity.magnitude > moveSpeed)
+        if (velocity.magnitude > speed)
         {
-            Vector3 limitedVel = velocity.normalized * moveSpeed;
+            Vector3 limitedVel = velocity.normalized * speed;
             rb.linearVelocity = limitedVel + GetVelocityAlongGravity();
         }
     }
@@ -182,9 +225,12 @@ public class PlayerController : GravityController
 
 
 
-    // JUMPING
+    #region JUMPING
     private void Jump()
     {
+        jumpDirection = GetVelocityOnPlane();
+
+
         // reset y velocity
         rb.linearVelocity = GetVelocityOnPlane();
 
@@ -196,20 +242,24 @@ public class PlayerController : GravityController
         readyToJump = true;
     }
 
+    #endregion
 
 
+    #region SPRINT
+    private void Run()
+    {
+        speed = runSpeed;
+    }
 
-    // SPRINT
+    private void StopRunning()
+    {
+        speed = moveSpeed;
+    }
+
+    #endregion
 
 
-
-
-
-
-
-
-
-    // HIT
+    #region HIT
     void HitAction() {
         readyToKick = false;
         Vector3 kickDirection = transform.position + playerObj.forward * kickDistance;
@@ -232,14 +282,10 @@ public class PlayerController : GravityController
 
     void ResetHitAction() {readyToKick = true;}
 
+    #endregion
 
 
-
-
-
-
-
-    // GRAB
+    #region GRAB
     void GrabAction() {
         Vector3 grabDirection = transform.position + playerObj.forward * grabDistance;
         Collider[] hits = Physics.OverlapSphere(grabDirection, grabRadius, kickMasK);
@@ -288,7 +334,7 @@ public class PlayerController : GravityController
         isGrabbing = false;
     }
 
-    ///////////////////////////////////////////////////////
+    #endregion
 
     public void ImpulsePlayer(Vector3 force) {
         rb.AddForce(force, ForceMode.Impulse);

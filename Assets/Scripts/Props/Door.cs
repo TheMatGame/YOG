@@ -32,6 +32,6 @@ public class Door : MonoBehaviour
 
     public void OpenDoor() {
         rotate = true;    
-        endPosition = rightDoor.position + new Vector3(0,10,0);
+        endPosition = rightDoor.position + new Vector3(0,-20,0);
     }
 }
