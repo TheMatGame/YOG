@@ -63,6 +63,8 @@ public class PlayerController : GravityController
     GrabInterface grabInterface;
     public Transform holdPosition;
 
+    static public bool dialogue = false;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
@@ -85,6 +87,9 @@ public class PlayerController : GravityController
         RaycastHit castHit;
         grounded = Physics.Raycast(transform.position, -transform.up, out castHit, playerHeight * 0.5f + 0.2f, whatIsGround);
 
+        
+
+
         if (grounded)
             rb.linearDamping = groundDrag;
         else 
@@ -99,9 +104,16 @@ public class PlayerController : GravityController
 
     protected override void FixedUpdate()
     {
-        base.FixedUpdate();
-        MovePlayer();
-        RotatePlayer();
+        
+        if (!dialogue)
+        {
+            base.FixedUpdate();
+            MovePlayer();
+            RotatePlayer();
+        }
+
+
+       
     }
 
     void MyInput() 

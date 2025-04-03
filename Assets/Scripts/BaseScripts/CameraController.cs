@@ -25,7 +25,19 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        RotateCamera();
+        if (!PlayerController.dialogue)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            RotateCamera();
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
+        
     }
     private void RotateCamera()
     {
