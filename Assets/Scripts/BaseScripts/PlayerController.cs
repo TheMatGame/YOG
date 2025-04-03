@@ -92,7 +92,7 @@ public class PlayerController : GravityController
 
         RaycastHit shadowHit;
         bool shadowHited = Physics.Linecast(transform.position, transform.position + gravityDirection * 100, out shadowHit, whatIsGround);
-        if (shadowHited) {
+        if (shadowHited && fakeShadow) {
             fakeShadow.position = shadowHit.point;
         }
     }
