@@ -7,6 +7,8 @@ public class NPCSystem : MonoBehaviour
 {
     bool player_detection = false; 
 
+     public GameObject dialoguePrompt;
+
     public GameObject d_template;
 
     public GameObject canva;
@@ -24,9 +26,13 @@ public class NPCSystem : MonoBehaviour
             NewDialogue("Welcome to our game!");
             NewDialogue("Vota al PSOE");
             NewDialogue("Illojuan masón");
-            canva.transform.GetChild(1).gameObject.SetActive(true);     
+            canva.transform.GetChild(1).gameObject.SetActive(true);    
+
+             dialoguePrompt.SetActive(false); 
         }
     }
+
+    
 
     void NewDialogue(string text)
     {
@@ -41,6 +47,8 @@ public class NPCSystem : MonoBehaviour
         if(other.name == "Player")
         {
             player_detection = true;
+            dialoguePrompt.SetActive(true);
+
         }
 
     }
@@ -49,7 +57,7 @@ public class NPCSystem : MonoBehaviour
     {
        
             player_detection = false;
-        
+            dialoguePrompt.SetActive(false);
 
     }
 
