@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -32,6 +32,7 @@ public class NPCSystem : MonoBehaviour
         }
     }
 
+
     
 
     void NewDialogue(string text)
@@ -62,3 +63,4 @@ public class NPCSystem : MonoBehaviour
     }
 
 }
+*/
