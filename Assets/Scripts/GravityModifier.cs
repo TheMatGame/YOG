@@ -26,7 +26,7 @@ public class GravityModifier : MonoBehaviour
         GravityController gravityController = other.GetComponent<GravityController>();
         if (!gravityController) return;
 
-        gravityController.ChangeGravity(this);
+        gravityController.ChangeGravity(gravityDirection, gravityForce);
     }
 
     virtual protected void OnTriggerExit(Collider other)
@@ -34,6 +34,5 @@ public class GravityModifier : MonoBehaviour
         GravityController gravityController = other.GetComponent<GravityController>();
         if (!gravityController) return;
 
-        gravityController.RemoveGravity(this);
     }
 }

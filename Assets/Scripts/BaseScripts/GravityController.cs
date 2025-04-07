@@ -4,8 +4,8 @@ using UnityEngine;
 public class GravityController : MonoBehaviour
 {
     public float gravityForce = 9.81f;
+    private float gravityMultiplier = 1f;
     public Vector3 gravityDirection = new Vector3(0,-1,0);
-    protected List<GravityModifier> gravityModifiers = new List<GravityModifier>();
     protected Rigidbody rb;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -24,48 +24,37 @@ public class GravityController : MonoBehaviour
 
     void ApplyGravity() 
     {
-        rb.AddForce(gravityDirection * gravityForce, ForceMode.Acceleration);
+        rb.AddForce(gravityDirection * gravityForce * gravityMultiplier, ForceMode.Acceleration);
     }
     
-    public void ChangeGravity(GravityModifier grav) {
-        if (gravityModifiers.Count == 0) {
-            gravityModifiers.Add(grav);
-        }
-        else 
-        {
-            bool found = false;
-            int index = 0;
-
-            while (index < gravityModifiers.Count && !found) {
-                if (gravityModifiers[index].priority < grav.priority) found = true;
-                else index++;
-            }
-
-            gravityModifiers.Insert(index, grav);
-        }
-
-        UpdateGravity();
-    }
-
-    public void RemoveGravity(GravityModifier grav) {
-        gravityModifiers.Remove(grav);
-
-        UpdateGravity();
-    }
-    
-    virtual protected void UpdateGravity() {      
-        if (gravityModifiers.Count > 0) {
-            gravityForce = gravityModifiers[0].gravityForce;
-            gravityDirection = gravityModifiers[0].gravityDirection;
-        }
-        else {
-            gravityForce = 9.81f;
-            gravityDirection = new Vector3(0,-1,0);
-        }
-        transform.up = -gravityDirection;
-    }
 
     public Rigidbody GetRigidbody() {
         return rb;
+    }
+
+    protected void SetGravityMultiplier(float multiplier) 
+    {
+        gravityMultiplier = multiplier;
+    }
+    
+    protected void SetGravityMultiplierDefault() 
+    {
+        gravityMultiplier = 1f;
+    }
+
+    protected void SetGravity(float gravity) 
+    {
+        gravityForce = gravity;
+    }
+    
+    protected void SetGravityDefault() 
+    {
+        gravityForce = 9.81f;
+    }
+
+    virtual public void ChangeGravity(Vector3 direction, float force = 9.81f) {
+        gravityDirection = direction;
+        gravityForce = force;
+        transform.up = -gravityDirection;
     }
 }
