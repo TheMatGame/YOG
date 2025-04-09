@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2731273527893963607}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 1, z: -4}
+  m_LocalPosition: {x: 1.59, y: 0.49, z: -3.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -182,10 +182,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distance: 10
+  sideDistance: 2
   layer:
     serializedVersion: 2
-    m_Bits: 0
-  grabCamera: {fileID: 7823104985267475872}
+    m_Bits: 128
+  transFree: 0
+  transGrab: 0
 --- !u!1 &4349048441404065614
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,16 +290,16 @@ MonoBehaviour:
   gravityDirection: {x: 0, y: -1, z: 0}
   playerObj: {fileID: 2982606322259108893}
   fakeShadow: {fileID: 0}
-  rotationSpeed: 7
+  rotationSpeed: 10
   moveSpeed: 12
-  runSpeed: 0
+  runSpeed: 15
   groundDrag: 5
   jumpForce: 12
   jumpCooldown: 0.25
-  airMultiplier: 0.4
+  airMultiplier: 0.8
   isJumping: 0
   isFalling: 0
-  jumpGravityMultiplier: 2
+  jumpGravityMultiplier: 5
   jumpDirection: {x: 0, y: 0, z: 0}
   jumpKey: 32
   sprintKey: 304
@@ -313,12 +315,13 @@ MonoBehaviour:
   kickCooldown: 0.5
   kickMasK:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 1025
   grabDistance: 1
   grabRadius: 0.5
   holdPosition: {fileID: 3567885259693849007}
-  maxJumpTime: 0
-  maxJumpHeight: 0
+  maxJumpTime: 0.75
+  maxJumpHeight: 7
+  shootingForce: 50
 --- !u!1 &5956139606252827599
 GameObject:
   m_ObjectHideFlags: 0
@@ -330,7 +333,7 @@ GameObject:
   - component: {fileID: 1954307000719486737}
   - component: {fileID: 5648519577105242984}
   - component: {fileID: 4030958911449952013}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
