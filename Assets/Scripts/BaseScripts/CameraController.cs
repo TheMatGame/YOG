@@ -1,16 +1,32 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Splines.Interpolators;
 
 public class CameraController : MonoBehaviour
 {
+    public enum CameraMode {
+        Free,
+        Grabbing
+    }
+    private CameraMode cameraMode = CameraMode.Free;
     PlayerController playerRef;
 
+
     public float distance = 10f;
+    public float sideDistance = 2f;
+    private float grabDistance;
+    private float _sideDistance;
+    private float normalDistance;
     public LayerMask layer;
- 
+
 
     private float yaw = 0f;
     private float pitch = 0f;
+    
+
+    public bool transFree = false;
+    public bool transGrab = false;
 
     
 
@@ -20,6 +36,10 @@ public class CameraController : MonoBehaviour
     {
         playerRef = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
         if (!playerRef) print("Palyer Not Set");
+
+        grabDistance = sideDistance;
+        normalDistance = 0;
+        _sideDistance = 0;
     }
 
     // Update is called once per frame
@@ -29,15 +49,21 @@ public class CameraController : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            RotateCamera();
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
+        
 
         
+        if (transFree) {
+            MoveCameraPostion(normalDistance);
+            if (_sideDistance == normalDistance) transFree = false;
+        }
+        else if (transGrab) {
+            MoveCameraPostion(grabDistance);
+            if (_sideDistance == grabDistance) transGrab = false;
+        }
+        
+
+        RotateCamera();      
+        }  
     }
     private void RotateCamera()
     {
@@ -68,18 +94,40 @@ public class CameraController : MonoBehaviour
 
     Vector3 OffsetCalculation(Quaternion finalRotation) 
     {
-        Vector3 offset = finalRotation * new Vector3(0, 0, -distance);
+        Vector3 offset = finalRotation * new Vector3(_sideDistance, 0, -distance);
 
         RaycastHit hit;
         bool hited = Physics.Linecast(playerRef.transform.position, playerRef.transform.position + offset, out hit, layer);
 
         if (hited) {
             float newDistance = Vector3.Distance(playerRef.transform.position, hit.point);
-            offset = finalRotation * new Vector3(0,0,-newDistance);
+            offset = finalRotation * new Vector3(_sideDistance,0,-newDistance);
         }
 
         return offset;
     }
+
+
+    void MoveCameraPostion(float end) {
+        _sideDistance = Mathf.Lerp(_sideDistance,end,Time.deltaTime);
+    }
+
+    public void ChangeCamera(CameraMode newMode) {
+        if (newMode == CameraMode.Free) {
+            transFree = true;
+        }
+        else if (newMode == CameraMode.Grabbing) 
+        {
+            transGrab = true;
+        }
+
+        cameraMode = newMode;
+    }
+
+
+
+
+
 
 
     public Vector3 GetCameraForwardDirection()
@@ -104,4 +152,5 @@ public class CameraController : MonoBehaviour
     {
         return transform;
     }
+
 }

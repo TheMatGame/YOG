@@ -30,14 +30,22 @@ public class PlayerController : GravityController
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump = true;
+    public bool isJumping = false; 
+    public bool isFalling = false;
+    public float jumpGravityMultiplier = 2f;
+
+
+
     [HideInInspector]
     public Vector3 jumpDirection = Vector3.zero;
+
 
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode sprintKey = KeyCode.LeftShift;
     public KeyCode kickKey = KeyCode.E;
     public KeyCode grabKey = KeyCode.G;
+
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -53,6 +61,7 @@ public class PlayerController : GravityController
     bool readyToKick = true;
     public LayerMask kickMasK;
 
+
     [Header("Grabbing")]
     bool canGrab = true;
     bool isGrabbing = false;
@@ -66,6 +75,14 @@ public class PlayerController : GravityController
     static public bool dialogue = false;
 
 
+
+    public float maxJumpTime;
+    public float maxJumpHeight;
+    private Vector3 jumpStartPosition;
+
+    public float shootingForce = 10f;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
     {
@@ -76,6 +93,7 @@ public class PlayerController : GravityController
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         speed = moveSpeed;
+
     }
 
     // Update is called once per frame
@@ -100,6 +118,11 @@ public class PlayerController : GravityController
         if (shadowHited && fakeShadow) {
             fakeShadow.position = shadowHit.point;
         }
+
+
+
+
+        JumpHandler();
     }
 
     protected override void FixedUpdate()
@@ -122,19 +145,16 @@ public class PlayerController : GravityController
         verticalInput = Input.GetAxis("Vertical");
 
         // when to jump
-        if (Input.GetKey(jumpKey) && readyToJump && grounded){
-            readyToJump = false;
+        if (Input.GetKey(jumpKey) && !isJumping && !isFalling && grounded) {
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
         }
 
-        if (Input.GetKeyDown(sprintKey)) // Se ejecuta una vez cuando se PRESIONA la tecla
-        {
+        if (Input.GetKeyDown(sprintKey)) {
             Run();
         }
 
-        if (Input.GetKeyUp(sprintKey)) // Se ejecuta una vez cuando se SUELTA la tecla
-        {
+        if (Input.GetKeyUp(sprintKey)) {
             StopRunning();
         }
 
@@ -165,7 +185,7 @@ public class PlayerController : GravityController
         }
         // in air
         else if (!grounded) {
-            rb.linearVelocity = moveDirection * speed + GetVelocityAlongGravity();
+            rb.linearVelocity = moveDirection * speed * airMultiplier + GetVelocityAlongGravity();
             // MidAirControll();
         }
     }
@@ -222,9 +242,9 @@ public class PlayerController : GravityController
         }
     }
 
-    protected override void UpdateGravity() 
-    {
-        base.UpdateGravity();
+
+    public override void ChangeGravity(Vector3 direction, float force = 9.81f) {
+        base.ChangeGravity(direction, force);
         playerObj.up = transform.up;
         cameraRef.transform.up = transform.up;
     }
@@ -240,19 +260,56 @@ public class PlayerController : GravityController
     #region JUMPING
     private void Jump()
     {
+        isJumping = true;
         jumpDirection = GetVelocityOnPlane();
-
+        jumpStartPosition = transform.position;
 
         // reset y velocity
-        rb.linearVelocity = GetVelocityOnPlane();
+        float initiallinearVelocityY = (maxJumpHeight + (0.5f * Mathf.Abs(gravityForce) * maxJumpTime * maxJumpTime)) / maxJumpTime;
 
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        rb.linearVelocity = GetVelocityOnPlane() + transform.up * initiallinearVelocityY * 1.5f;
+
+        // rb.AddForce(transform.up * jumpForce, ForceMode.VelocityChange);
     }
+
 
     private void ResetJump()
     {
         readyToJump = true;
     }
+
+
+    void JumpHandler() 
+    {
+        if (isFalling) SetGravityMultiplier(jumpGravityMultiplier);
+        else {
+            SetGravityMultiplierDefault();
+        }
+
+        float traveledDistance = (transform.position - jumpStartPosition).magnitude;
+        float threshold = maxJumpHeight / 7f;
+
+        if (isJumping && maxJumpHeight - traveledDistance <= threshold) {
+            float remainingFactor = Mathf.Clamp01((maxJumpHeight - traveledDistance) / threshold); // Rango [0,1]
+            float velocityReduction = Mathf.SmoothStep(0.1f, 1f, remainingFactor);
+
+            rb.linearVelocity = GetVelocityOnPlane() + GetVelocityAlongGravity() * velocityReduction;
+        }
+        
+
+        float speed = Vector3.Dot(GetVelocityAlongGravity(), -gravityDirection);
+        if (isJumping && (traveledDistance >= maxJumpHeight || speed <= 0f)) {
+            isFalling = true;
+            isJumping = false;
+        }
+        else if (isFalling && grounded) {
+            isFalling = false;
+            isJumping = false;    
+            print("Jump distance = " + Vector3.Distance(jumpStartPosition, transform.position));
+        }
+    }
+
+
 
     #endregion
 
@@ -315,6 +372,8 @@ public class PlayerController : GravityController
                 grabInterface.Grab(gameObject);
 
                 DrawWireSphere(grabDirection, kickRadius, Color.green, 1f);
+
+                cameraRef.ChangeCamera(CameraController.CameraMode.Grabbing);
             }
             else ResetGrabAction();
         }
@@ -327,17 +386,26 @@ public class PlayerController : GravityController
         GravityController gravityController = grabedActor.GetComponent<GravityController>();
         if (!gravityController) return;
 
-        Vector3 throwDirection = (playerObj.forward + transform.up).normalized;
-        Debug.DrawLine(transform.position, transform.position + throwDirection * 10, Color.red, 0.25f);
+        // Vector3 throwDirection = (playerObj.forward + transform.up).normalized;
+        // Debug.DrawLine(transform.position, transform.position + throwDirection * 10, Color.red, 0.25f);
+
+        Debug.DrawLine(transform.position, transform.position + cameraRef.transform.forward * 10f, Color.white, 5f);
+        Vector3 throwDirection = cameraRef.transform.forward;
+        playerObj.rotation = Quaternion.LookRotation(cameraRef.GetCameraForwardDirection(), transform.up);
+
 
         grabInterface.Release();
 
         // Aplicar fuerza correctamente
         Rigidbody rb = gravityController.GetRigidbody();
         rb.linearVelocity = this.rb.linearVelocity; // Le aplicamos el momentum del player al objeto
-        rb.AddForce(throwDirection * 10f, ForceMode.Impulse);
+
+        rb.AddForce(throwDirection * shootingForce, ForceMode.Impulse);
 
         ResetGrabAction();
+
+        cameraRef.ChangeCamera(CameraController.CameraMode.Free);
+
 
     }
 

@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2731273527893963607
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7823104985267475872}
+  m_Layer: 9
+  m_Name: GrabCameraPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7823104985267475872
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2731273527893963607}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1, y: 1, z: -4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2982606322259108893}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4003444548094538712
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,6 +182,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distance: 10
+  layer:
+    serializedVersion: 2
+    m_Bits: 0
+  grabCamera: {fileID: 7823104985267475872}
 --- !u!1 &4349048441404065614
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,19 +287,27 @@ MonoBehaviour:
   gravityForce: 9.81
   gravityDirection: {x: 0, y: -1, z: 0}
   playerObj: {fileID: 2982606322259108893}
+  fakeShadow: {fileID: 0}
   rotationSpeed: 7
   moveSpeed: 12
+  runSpeed: 0
   groundDrag: 5
   jumpForce: 12
   jumpCooldown: 0.25
   airMultiplier: 0.4
+  isJumping: 0
+  isFalling: 0
+  jumpGravityMultiplier: 2
+  jumpDirection: {x: 0, y: 0, z: 0}
   jumpKey: 32
+  sprintKey: 304
   kickKey: 323
   grabKey: 324
   playerHeight: 2
   whatIsGround:
     serializedVersion: 2
     m_Bits: 128
+  grounded: 0
   kickDistance: 1
   kickRadius: 0.5
   kickCooldown: 0.5
@@ -274,6 +317,8 @@ MonoBehaviour:
   grabDistance: 1
   grabRadius: 0.5
   holdPosition: {fileID: 3567885259693849007}
+  maxJumpTime: 0
+  maxJumpHeight: 0
 --- !u!1 &5956139606252827599
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,6 +438,7 @@ Transform:
   m_Children:
   - {fileID: 3567885259693849007}
   - {fileID: 1954307000719486737}
+  - {fileID: 7823104985267475872}
   m_Father: {fileID: 3095551701265813042}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8196215633919744826
