@@ -15,8 +15,8 @@ public class CameraController : MonoBehaviour
 
     public float distance = 10f;
     public float sideDistance = 2f;
-    private float grabDistance;
     private float _sideDistance;
+    private float grabDistance;
     private float normalDistance;
     public LayerMask layer;
 
@@ -62,8 +62,10 @@ public class CameraController : MonoBehaviour
         }
         
 
-        RotateCamera();      
-        }  
+        
+        RotateCamera();        
+        if (cameraMode == CameraMode.Grabbing) Debug.DrawLine(transform.position, transform.position + transform.forward * 100, Color.red, 0.1f);
+        }
     }
     private void RotateCamera()
     {
@@ -115,10 +117,12 @@ public class CameraController : MonoBehaviour
     public void ChangeCamera(CameraMode newMode) {
         if (newMode == CameraMode.Free) {
             transFree = true;
+            transGrab = false;
         }
         else if (newMode == CameraMode.Grabbing) 
         {
             transGrab = true;
+            transFree = false;
         }
 
         cameraMode = newMode;
