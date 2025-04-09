@@ -49,7 +49,7 @@ public class DialogueManager : MonoBehaviour
     void Update()
     {
         // Avanza el diálogo con la tecla Espacio
-        if (dialoguePanel.activeSelf && Input.GetKeyDown(KeyCode.F))
+        if (dialoguePanel.activeSelf && Input.GetMouseButtonDown(0))
         {
             NextLine();
         }

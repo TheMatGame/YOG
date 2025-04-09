@@ -8,6 +8,7 @@ public class NPCSystem : MonoBehaviour
     public DialogueManager dialogueManager;  // Referencia al DialogueManager
     public List<string> dialogueLines;         // Líneas de diálogo propias de este NPC
     public GameObject dialoguePrompt;          // Indicador de interacción
+    public GameObject dialoguePrompt2;          // Indicador de interacción
 
 
     private bool playerInRange = false;
@@ -15,10 +16,11 @@ public class NPCSystem : MonoBehaviour
     void Update()
     {
         // Inicia el diálogo al pulsar F cuando el jugador está cerca
-        if (playerInRange && Input.GetKeyDown(KeyCode.F) && !PlayerController.dialogue)
+        if (playerInRange && Input.GetMouseButtonDown(0) && !PlayerController.dialogue)
         {
             PlayerController.dialogue = true;
             dialoguePrompt.SetActive(false);
+            dialoguePrompt2.SetActive(false);
             dialogueManager.StartDialogue(dialogueLines);
         }
     }
@@ -30,6 +32,7 @@ public class NPCSystem : MonoBehaviour
         {
             playerInRange = true;
             dialoguePrompt.SetActive(true);
+            dialoguePrompt2.SetActive(true);
         }
     }
 
@@ -37,6 +40,7 @@ public class NPCSystem : MonoBehaviour
     {
             playerInRange = false;
             dialoguePrompt.SetActive(false);
+            dialoguePrompt2.SetActive(false);
         
     }
 }

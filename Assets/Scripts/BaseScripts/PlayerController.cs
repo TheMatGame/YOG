@@ -346,7 +346,7 @@ public class PlayerController : GravityController
         }
         else DrawWireSphere(kickDirection, kickRadius, Color.red, 1f);
 
-        rb.AddForce(kickDirection.normalized * 2, ForceMode.Impulse);
+        // rb.AddForce(kickDirection.normalized * 2, ForceMode.Impulse);
     }
 
     void ResetHitAction() {readyToKick = true;}
