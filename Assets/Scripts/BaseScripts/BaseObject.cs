@@ -27,7 +27,7 @@ public class BaseObject : GravityController, GrabInterface
     
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
         if (objectState == ObjectState.Grabbed) {
             transform.position = playerController.holdPosition.position;
@@ -50,7 +50,7 @@ public class BaseObject : GravityController, GrabInterface
         gameObject.layer = noPlayerLayer;
     }
 
-    void GrabInterface.Release()
+    public virtual void Release()
     {
         objectState = ObjectState.Air;
         // Mirar si la posicion entre jugador y objeto es superior a un umbral
