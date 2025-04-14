@@ -16,10 +16,15 @@ public class SplineMover : MonoBehaviour
     private float t = 0f; // Parámetro de interpolación
     private int direction = 1; // Dirección (1 hacia adelante, -1 hacia atrás)
 
+    public bool waitForPlayer = false;
+    private bool on = false;
+    private Transform playerTransform;
+
     void Awake()
     {
         splineContainer = GetComponent<SplineContainer>();
         movingObject = transform.GetChild(0);
+        playerTransform = GameObject.FindGameObjectsWithTag("Player")[0].transform;
     }
 
     void Start()
@@ -33,6 +38,10 @@ public class SplineMover : MonoBehaviour
     void FixedUpdate()
     {
         if (splineContainer == null || movingObject == null) return;
+
+        if (Vector3.Distance(playerTransform.position, movingObject.position) < 3) on = true;
+
+        if (waitForPlayer && !on) return;
 
         // Obtener la spline (suponiendo que solo hay una)
         Spline spline = splineContainer.Spline;
@@ -63,10 +72,11 @@ public class SplineMover : MonoBehaviour
             }
         } else {
             // Invertir dirección si llegamos al final o al inicio
-            direction = 1;
             if (t >= 1.0f)
             {
                 t = 0.0f;
+                direction = 1;
+                on = false;
             }
         }
     }

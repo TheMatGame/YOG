@@ -1,16 +1,12 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Diana : MonoBehaviour
+public class Diana : MonoBehaviour, HitInterface
 {
     public UnityEvent evento;
 
-    void OnCollisionEnter(Collision collision)
+    public void Hit(GameObject actor)
     {
-        GrabInterface grabbable = collision.gameObject.GetComponent<GrabInterface>();
-
-        if (grabbable == null) return;
-
         evento.Invoke();
     }
 }
