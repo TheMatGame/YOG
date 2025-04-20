@@ -4,11 +4,13 @@ public class State_Following : State
 {
     GameObject owner;
     GameObject target;
+    float speed;
 
-    public State_Following(GameObject owner, GameObject target)
+    public State_Following(GameObject owner, GameObject target, float speed = 1f)
     {
         this.owner = owner;
         this.target = target;
+        this.speed = speed;
     }
 
     public override void EnterState()
@@ -21,6 +23,6 @@ public class State_Following : State
 
     public override void UpdateState()
     {
-        owner.transform.position = Vector3.MoveTowards(owner.transform.position, target.transform.position, 0.05f);
+        owner.transform.position = Vector3.MoveTowards(owner.transform.position, target.transform.position, 0.05f*speed);
     }
 }

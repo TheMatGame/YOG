@@ -82,6 +82,8 @@ public class PlayerController : GravityController
 
     public float shootingForce = 10f;
 
+    public Animator animator;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
@@ -104,7 +106,8 @@ public class PlayerController : GravityController
 
         RaycastHit castHit;
         grounded = Physics.Raycast(transform.position, -transform.up, out castHit, playerHeight * 0.5f + 0.2f, whatIsGround);
-
+        if (!grounded && !isJumping) isFalling = true;
+        else isFalling = false;
         
 
 
@@ -120,7 +123,8 @@ public class PlayerController : GravityController
         }
 
 
-
+        animator.SetBool("isGrabbing", isGrabbing);
+        animator.SetBool("isJumping", isJumping);
 
         JumpHandler();
     }
@@ -146,20 +150,25 @@ public class PlayerController : GravityController
 
         // when to jump
         if (Input.GetKey(jumpKey) && !isJumping && !isFalling && grounded) {
+            animator.SetTrigger("Jump");
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
         }
 
         if (Input.GetKeyDown(sprintKey)) {
+            animator.SetBool("isRunning", true);
             Run();
         }
 
         if (Input.GetKeyUp(sprintKey)) {
+            animator.SetBool("isRunning", false);
             StopRunning();
         }
 
         if (Input.GetKey(kickKey) && readyToKick) {
             if (!isGrabbing) {
+                // animator.SetBool("isPunching", true);
+                animator.SetTrigger("Punch");
                 HitAction();
                 Invoke(nameof(ResetHitAction), kickCooldown);
             }
@@ -169,6 +178,8 @@ public class PlayerController : GravityController
         }
 
         if (Input.GetKey(grabKey) && canGrab && !isGrabbing) {
+            animator.SetTrigger("PickUp");
+            print("SPAM");
             GrabAction();
         }
     }
@@ -178,6 +189,9 @@ public class PlayerController : GravityController
         // calculate movement direction
         moveDirection = cameraRef.GetCameraForwardDirection() * verticalInput 
                         + cameraRef.GetCameraRightDirection() * horizontalInput;
+
+        if (moveDirection.magnitude > 0f) animator.SetBool("isMoving", true);
+        else animator.SetBool("isMoving", false);
 
         // on ground
         if (grounded) {
@@ -234,6 +248,7 @@ public class PlayerController : GravityController
         // Obtener velocidad del jugador en el plano
         Vector3 velocity = GetVelocityOnPlane();
 
+        
         // limit velocity if needed
         if (velocity.magnitude > speed)
         {
@@ -349,18 +364,22 @@ public class PlayerController : GravityController
         // rb.AddForce(kickDirection.normalized * 2, ForceMode.Impulse);
     }
 
-    void ResetHitAction() {readyToKick = true;}
+    void ResetHitAction() {
+        animator.SetBool("isPunching", false);
+        readyToKick = true;
+    }
 
     #endregion
 
 
     #region GRAB
     void GrabAction() {
+        canGrab = false;
+
         Vector3 grabDirection = transform.position + playerObj.forward * grabDistance;
         Collider[] hits = Physics.OverlapSphere(grabDirection, grabRadius, kickMasK);
 
         if (hits.Length > 0) {  // Maybe solo hacerlo con uno
-            canGrab = false;
 
             Collider hit = hits[0];
             grabInterface = hit.gameObject.GetComponent<GrabInterface>();
@@ -375,9 +394,13 @@ public class PlayerController : GravityController
 
                 cameraRef.ChangeCamera(CameraController.CameraMode.Grabbing);
             }
-            else ResetGrabAction();
+            else Invoke(nameof(ResetGrabAction), 0.25f);
         }
-        else DrawWireSphere(grabDirection, kickRadius, Color.red, 1f);
+        else {
+            Invoke(nameof(ResetGrabAction), 0.25f);
+            DrawWireSphere(grabDirection, kickRadius, Color.red, 1f);
+        }
+
     }
 
 

@@ -6,22 +6,19 @@ using UnityEngine;
 // o unicamente por objetos, como podrian ser explosivos.
 public class Breakable : MonoBehaviour, HitInterface
 {
-    [SerializeField] bool onlyObjectsCanBreak = true;
+    [SerializeField] bool playerCanBreak = true;
+    [SerializeField] GameObject particle;
 
     public void Hit(GameObject actor)
     {
-        if (onlyObjectsCanBreak) {
-            
-            BaseObject baseObject = actor.gameObject.GetComponent<BaseObject>();
-            if (baseObject == null) return;
-
-            DestroyBox();
-        }
-        else DestroyBox();
+        if (!playerCanBreak && actor.gameObject.CompareTag("Player")) return;
+        
+        DestroyBox();
     }
 
     void DestroyBox() {
         // Play breaking animation 
+        Instantiate(particle, transform.position, transform.rotation);
         // Play breaking sound
         Destroy(gameObject);
     }

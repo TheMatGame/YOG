@@ -15,6 +15,7 @@ public class Explosive : BaseObject
     public float explosionRadius = 5f;
 
     private bool on = false;
+    [SerializeField] GameObject particle;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
@@ -39,6 +40,7 @@ public class Explosive : BaseObject
 
     private void Explode() {
         // Animation
+        Instantiate(particle, transform.position, transform.rotation);
         // Sound
 
         // Damage
