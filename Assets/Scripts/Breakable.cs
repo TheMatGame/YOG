@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -8,6 +9,27 @@ public class Breakable : MonoBehaviour, HitInterface
 {
     [SerializeField] bool playerCanBreak = true;
     [SerializeField] GameObject particle;
+    [SerializeField] bool respawn = false;
+    public float respawnTime = 5f;
+    private float timer;
+    private bool timerOn = false;
+
+    void Start()
+    {
+        timer = respawnTime;
+    }
+
+    void Update()
+    {
+        if (timerOn) {
+            timer -= Time.deltaTime;
+            if (timer <= 0) {
+                timerOn = false;
+                timer = respawnTime;
+                gameObject.SetActive(true);
+            }
+        }
+    }
 
     public void Hit(GameObject actor)
     {
@@ -20,7 +42,9 @@ public class Breakable : MonoBehaviour, HitInterface
         // Play breaking animation 
         Instantiate(particle, transform.position, transform.rotation);
         // Play breaking sound
-        Destroy(gameObject);
+
+        if (respawn) gameObject.SetActive(false);
+        else Destroy(gameObject);
     }
 
 }

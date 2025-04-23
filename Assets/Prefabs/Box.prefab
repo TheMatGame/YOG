@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5103067561625355065}
   - component: {fileID: 4594946214299759829}
   - component: {fileID: 7683469625622792908}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,3 +123,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCanBreak: 1
   particle: {fileID: 9157105887711914197, guid: c4f829cb7dd4b864caf8832ec5b1ee55, type: 3}
+  respawn: 1
+  respawnTime: 5

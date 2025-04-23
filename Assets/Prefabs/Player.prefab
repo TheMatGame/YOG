@@ -317,7 +317,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1025
   grabDistance: 1
-  grabRadius: 0.5
+  grabRadius: 1
   holdPosition: {fileID: 3567885259693849007}
   maxJumpTime: 0.75
   maxJumpHeight: 7

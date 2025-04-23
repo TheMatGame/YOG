@@ -178,7 +178,7 @@ public class PlayerController : GravityController
         }
 
         if (Input.GetKey(grabKey) && canGrab && !isGrabbing) {
-            animator.SetTrigger("PickUp");
+            // animator.SetTrigger("PickUp");
             print("SPAM");
             GrabAction();
         }
@@ -347,7 +347,7 @@ public class PlayerController : GravityController
     void HitAction() {
         readyToKick = false;
         Vector3 kickDirection = transform.position + playerObj.forward * kickDistance;
-        Collider[] hits = Physics.OverlapSphere(kickDirection, kickRadius, kickMasK);
+        Collider[] hits = Physics.OverlapSphere(kickDirection, kickRadius);
 
         if (hits.Length > 0) {
             foreach (var hit in hits) {
@@ -393,14 +393,12 @@ public class PlayerController : GravityController
                 DrawWireSphere(grabDirection, kickRadius, Color.green, 1f);
 
                 cameraRef.ChangeCamera(CameraController.CameraMode.Grabbing);
+                return;
             }
-            else Invoke(nameof(ResetGrabAction), 0.25f);
         }
-        else {
-            Invoke(nameof(ResetGrabAction), 0.25f);
-            DrawWireSphere(grabDirection, kickRadius, Color.red, 1f);
-        }
+        else DrawWireSphere(grabDirection, kickRadius, Color.red, 1f);
 
+        ResetGrabAction();
     }
 
 
@@ -409,11 +407,19 @@ public class PlayerController : GravityController
         GravityController gravityController = grabedActor.GetComponent<GravityController>();
         if (!gravityController) return;
 
-        // Vector3 throwDirection = (playerObj.forward + transform.up).normalized;
-        // Debug.DrawLine(transform.position, transform.position + throwDirection * 10, Color.red, 0.25f);
-
         Debug.DrawLine(transform.position, transform.position + cameraRef.transform.forward * 10f, Color.white, 5f);
-        Vector3 throwDirection = cameraRef.transform.forward;
+        RaycastHit castHit;
+        Vector3 endPos = cameraRef.transform.position + cameraRef.transform.forward * 100f;
+        bool hit = Physics.Linecast(cameraRef.transform.position, endPos, out castHit);
+
+        Vector3 throwDirection;
+        if (hit) {
+            throwDirection = (castHit.point - transform.position).normalized;
+        }
+        else {
+            throwDirection = (endPos - transform.position).normalized;
+        }
+
         playerObj.rotation = Quaternion.LookRotation(cameraRef.GetCameraForwardDirection(), transform.up);
 
 

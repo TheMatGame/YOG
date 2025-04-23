@@ -31,6 +31,7 @@ public class BaseObject : GravityController, GrabInterface
     {
         if (objectState == ObjectState.Grabbed) {
             transform.position = playerController.holdPosition.position;
+            transform.parent = null;
         }
         else if (objectState == ObjectState.Air) {
             if (rb.linearVelocity.magnitude <= 0) {

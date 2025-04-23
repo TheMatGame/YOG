@@ -109,9 +109,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
-  m_Height: 2
+  m_Height: 1.8629684
   m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+  m_Center: {x: 0.000000059604645, y: -0.066661835, z: -0.00000011920929}
 --- !u!114 &1040335491282006940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,6 +130,7 @@ MonoBehaviour:
   timeTillExplosion: 3
   explosionRadius: 5
   particle: {fileID: 8791802859087666345, guid: ae07f2a45f14a82428409cfe410e6002, type: 3}
+  sound: {fileID: 8300000, guid: 31ae2328cb8b43b4e99499b200239363, type: 3}
 --- !u!54 &3051244700981702360
 Rigidbody:
   m_ObjectHideFlags: 0

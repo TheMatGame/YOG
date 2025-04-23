@@ -1,4 +1,5 @@
 using System.Threading;
+using Mono.Cecil.Cil;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -16,6 +17,9 @@ public class Explosive : BaseObject
 
     private bool on = false;
     [SerializeField] GameObject particle;
+    [SerializeField] AudioClip sound;
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
@@ -42,6 +46,7 @@ public class Explosive : BaseObject
         // Animation
         Instantiate(particle, transform.position, transform.rotation);
         // Sound
+        PlaySound();
 
         // Damage
         Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
@@ -64,6 +69,18 @@ public class Explosive : BaseObject
         if (on && layer != "Player") {
             Explode();
         }
+    }
+
+    private void PlaySound() {
+            // Crear un objeto solo para el sonido
+        GameObject tempAudio = new GameObject("TempAudio");
+        tempAudio.transform.position = transform.position;
+
+        AudioSource aSource = tempAudio.AddComponent<AudioSource>();
+        aSource.clip = sound;
+        aSource.PlayOneShot(sound);
+
+        Destroy(tempAudio, sound.length); // destruir después de que suene
     }
 
 }

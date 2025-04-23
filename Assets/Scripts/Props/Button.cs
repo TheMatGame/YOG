@@ -17,7 +17,7 @@ public class Button : MonoBehaviour, HitInterface
     {
         if (needKey && collision.gameObject.CompareTag("Key") && !on) {
             evento.Invoke();
-            Object.Destroy(collision.gameObject);
+            // Object.Destroy(collision.gameObject);
         }
 
     }
