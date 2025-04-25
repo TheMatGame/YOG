@@ -15244,6 +15244,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 376539505579257329, guid: 77e795ab4ae4d5f40b3e6ea5187cf702, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1297668779}
+    - target: {fileID: 1864728457160995275, guid: 77e795ab4ae4d5f40b3e6ea5187cf702, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3095551701265813042, guid: 77e795ab4ae4d5f40b3e6ea5187cf702, type: 3}
       propertyPath: m_LocalPosition.x
       value: 12
@@ -15289,7 +15297,8 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 5956139606252827599, guid: 77e795ab4ae4d5f40b3e6ea5187cf702, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 77e795ab4ae4d5f40b3e6ea5187cf702, type: 3}
@@ -18467,6 +18476,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 944528723}
   m_SourcePrefab: {fileID: 100100000, guid: c50559a6b5db73240b52bdf843ae4794, type: 3}
+--- !u!95 &1297668779 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7935543676855620878, guid: 77e795ab4ae4d5f40b3e6ea5187cf702, type: 3}
+  m_PrefabInstance: {fileID: 1072684898}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1307431877
 GameObject:
   m_ObjectHideFlags: 0
@@ -19149,7 +19163,7 @@ MonoBehaviour:
   dialogueLines:
   - You found me!
   - Have a tip as a thanks
-  - You can kick buttons to open doors
+  - You can left click to punch
   dialoguePrompt: {fileID: 481530283}
   dialoguePrompt2: {fileID: 2085869261}
 --- !u!135 &1369305103
