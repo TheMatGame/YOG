@@ -20,6 +20,16 @@ public class SM_Bull : MonoBehaviour
 
     GameObject target;
 
+    void OnEnable()
+    {
+        RespawnZone.Instance.OnPlayerDeath += ResetObject;
+    }
+
+    void OnDisable()
+    {
+        RespawnZone.Instance.OnPlayerDeath -= ResetObject;
+    }
+
     void Start() 
     {
         animator = GetComponent<Animator>();
@@ -87,4 +97,9 @@ public class SM_Bull : MonoBehaviour
         hitInterface.Hit(gameObject);
     }
 
+
+    void ResetObject()
+    {
+        Destroy(gameObject);
+    }
 }

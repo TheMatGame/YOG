@@ -1,6 +1,4 @@
-using UnityEditor.SearchService;
 using UnityEngine;
-using UnityEngine.Animations;
 
 public class BaseObject : GravityController, GrabInterface
 {

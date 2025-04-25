@@ -20,6 +20,16 @@ public class SplineMover : MonoBehaviour
     private bool on = false;
     private Transform playerTransform;
 
+    void OnEnable()
+    {
+        RespawnZone.Instance.OnPlayerDeath += ResetObject;
+    }
+
+    void OnDisable()
+    {
+        RespawnZone.Instance.OnPlayerDeath -= ResetObject;
+    }
+    
     void Awake()
     {
         splineContainer = GetComponent<SplineContainer>();
@@ -79,5 +89,20 @@ public class SplineMover : MonoBehaviour
                 on = false;
             }
         }
+    }
+
+
+    void ResetObject()
+    {
+        t = 0.0f;
+        direction = 1;
+        Spline spline = splineContainer.Spline;
+        Unity.Mathematics.float3 pos = spline.EvaluatePosition(t);
+         movingObject.position = new Vector3(
+            transform.position.x + pos.x,
+            transform.position.y + pos.y,
+            transform.position.z + pos.z
+        );
+        on = false;
     }
 }

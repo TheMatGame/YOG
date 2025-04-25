@@ -30,6 +30,10 @@ public class LevelController : MonoBehaviour
 
     public void RemoveAllSounds()
     {
+        foreach (AudioSource source in sources)
+        {
+            source.Stop();
+        }
         sources.Clear();
     }
 

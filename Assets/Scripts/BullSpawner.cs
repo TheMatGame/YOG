@@ -7,6 +7,7 @@ public class BullSpawner : MonoBehaviour
     [SerializeField] int num;
     [SerializeField] Transform spawnPoint;
     [SerializeField] AudioSource music;
+    [SerializeField] LevelController levelController;
 
     void OnTriggerEnter(Collider other)
     {
@@ -26,7 +27,7 @@ public class BullSpawner : MonoBehaviour
             Instantiate(bull, pos, spawnPoint.rotation);
         }
 
-        music.Play();
+        if (!music.isPlaying) levelController.AddSound(music);
 
     }
 }
